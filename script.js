@@ -94,6 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const previousBtn = document.getElementById("previous-btn");
   const submitButton = document.getElementById("submit-btn");
   const quizDescription = document.getElementById("quiz-description");
+  const startQuizContainer = document.getElementById("start-screen");
 
   let currentQuestionIndex = 0;
   let score = 0;
@@ -111,7 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
       showResult();
     }
 
-    localStorageMetehod();
+    localStorageMethod();
   });
 
   quizDescription.classList.remove("hidden");
@@ -144,7 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     showQuestion();
 
-    localStorageMetehod();
+    localStorageMethod();
   }
 
   function showQuestion() {
@@ -184,7 +185,7 @@ document.addEventListener("DOMContentLoaded", () => {
       submitButton.classList.add("hidden");
     }
 
-    localStorageMetehod();
+    localStorageMethod();
   }
 
   function selectAnswer(li, choice) {
@@ -204,12 +205,14 @@ document.addEventListener("DOMContentLoaded", () => {
       li.classList.add("unselected");
       li.style.backgroundColor = "red";
     }
+
+    answerQuiz[currentQuestionIndex] = choice;
     setTimeout(() => {
       // nextButton.classList.remove("hidden");
       previousBtn.classList.remove("hidden");
     }, 500);
 
-    localStorageMetehod();
+    localStorageMethod();
   }
 
   restartQuiz.classList.add("hidden");
@@ -223,7 +226,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     restartQuiz.classList.remove("hidden");
 
-    localStorageMetehod();
+    localStorageMethod();
   }
 
   restartQuiz.addEventListener("click", () => {
@@ -232,13 +235,23 @@ document.addEventListener("DOMContentLoaded", () => {
     resultContainer.classList.add("hidden");
     startQuiz();
 
-    localStorageMetehod();
+    localStorageMethod();
   });
 
-  function localStorageMetehod() {
-    localStorage.setItem(
-      "Quiz",
-      JSON.stringify({ currentQuestionIndex, score })
-    );
+  function localStorageMethod() {
+    const quizState = { currentQuestionIndex, score };
+    localStorage.setItem("Quiz", JSON.stringify(quizState));
   }
+
+  window.addEventListener("load", () => {
+    const savedState = JSON.parse(localStorage.getItem("Quiz"));
+    if (savedState) {
+      currentQuestionIndex = savedState.currentQuestionIndex;
+      score = savedState.score;
+      console.log("Loaded from local storage", savedState);
+      showQuestion();
+      startQuizContainer.classList.add("hidden");
+      questionContainer.classList.remove("hidden");
+    }
+  });
 });
